@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		922062781A827CE600094E49 /* AccessToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 922062771A827CE600094E49 /* AccessToken.m */; };
+		9220627B1A83660000094E49 /* UserLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9220627A1A83660000094E49 /* UserLoginViewController.m */; };
+		922062841A88F1EA00094E49 /* Frob.m in Sources */ = {isa = PBXBuildFile; fileRef = 922062831A88F1EA00094E49 /* Frob.m */; };
 		92D3B0A91A768410007A3DF3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 92D3B0A81A768410007A3DF3 /* main.m */; };
 		92D3B0AC1A768410007A3DF3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 92D3B0AB1A768410007A3DF3 /* AppDelegate.m */; };
 		92D3B0AF1A768410007A3DF3 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92D3B0AE1A768410007A3DF3 /* ViewController.m */; };
@@ -46,6 +49,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		922062761A827CE600094E49 /* AccessToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccessToken.h; sourceTree = "<group>"; };
+		922062771A827CE600094E49 /* AccessToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccessToken.m; sourceTree = "<group>"; };
+		922062791A83660000094E49 /* UserLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserLoginViewController.h; sourceTree = "<group>"; };
+		9220627A1A83660000094E49 /* UserLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLoginViewController.m; sourceTree = "<group>"; };
+		922062821A88F1EA00094E49 /* Frob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frob.h; sourceTree = "<group>"; };
+		922062831A88F1EA00094E49 /* Frob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Frob.m; sourceTree = "<group>"; };
 		92D3B0A31A768410007A3DF3 /* FlickrViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlickrViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92D3B0A71A768410007A3DF3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		92D3B0A81A768410007A3DF3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -149,6 +158,12 @@
 				92D3B4041A77A6B3007A3DF3 /* ServerManager.m */,
 				92D3B4061A79573C007A3DF3 /* ServerResponse.h */,
 				92D3B4071A79573C007A3DF3 /* ServerResponse.m */,
+				922062761A827CE600094E49 /* AccessToken.h */,
+				922062771A827CE600094E49 /* AccessToken.m */,
+				922062821A88F1EA00094E49 /* Frob.h */,
+				922062831A88F1EA00094E49 /* Frob.m */,
+				922062791A83660000094E49 /* UserLoginViewController.h */,
+				9220627A1A83660000094E49 /* UserLoginViewController.m */,
 				92D3B0B01A768410007A3DF3 /* Main.storyboard */,
 				92D3B0B31A768410007A3DF3 /* Images.xcassets */,
 				92D3B0B51A768410007A3DF3 /* LaunchScreen.xib */,
@@ -342,9 +357,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				922062841A88F1EA00094E49 /* Frob.m in Sources */,
 				92D3B3F21A77A5F8007A3DF3 /* AFHTTPRequestOperation.m in Sources */,
 				92D3B3FF1A77A5F8007A3DF3 /* UIImageView+AFNetworking.m in Sources */,
 				92D3B0AF1A768410007A3DF3 /* ViewController.m in Sources */,
+				9220627B1A83660000094E49 /* UserLoginViewController.m in Sources */,
 				92D3B3F31A77A5F8007A3DF3 /* AFHTTPRequestOperationManager.m in Sources */,
 				92D3B4081A79573C007A3DF3 /* ServerResponse.m in Sources */,
 				92D3B4001A77A5F8007A3DF3 /* UIProgressView+AFNetworking.m in Sources */,
@@ -352,6 +369,7 @@
 				92D3B3F91A77A5F8007A3DF3 /* AFURLResponseSerialization.m in Sources */,
 				92D3B3F71A77A5F8007A3DF3 /* AFURLConnectionOperation.m in Sources */,
 				92D3B3FE1A77A5F8007A3DF3 /* UIButton+AFNetworking.m in Sources */,
+				922062781A827CE600094E49 /* AccessToken.m in Sources */,
 				92D3B3FC1A77A5F8007A3DF3 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				92D3B3F61A77A5F8007A3DF3 /* AFSecurityPolicy.m in Sources */,
 				92D3B4011A77A5F8007A3DF3 /* UIRefreshControl+AFNetworking.m in Sources */,

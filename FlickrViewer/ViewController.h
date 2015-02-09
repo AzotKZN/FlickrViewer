@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface ViewController : UITableViewController
-
+-(void) getTokenFromServer:(NSString*) Frob11;
 
 @end
 

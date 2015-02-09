@@ -10,12 +10,17 @@
 #import "ServerManager.h"
 #import "ServerResponse.h"
 #import "UIImageView+AFNetworking.h"
+#import "Frob.h"
+#import "MD5Generate.h"
+#import <CommonCrypto/CommonDigest.h>
 
 @interface ViewController ()
 
 @property (strong, nonatomic) NSMutableArray* albumArray;
 @property (strong, nonatomic) NSMutableArray* photosArray;
-
+@property (strong, nonatomic) NSString* token;
+@property (assign, nonatomic) BOOL firstTimeAppear;
+@property (strong, nonatomic) Frob* frob;
 @end
 
 @implementation ViewController
@@ -28,6 +33,11 @@
    // [self getAlbumFromServer];
     
     [self getPhotoFromServer];
+    self.firstTimeAppear = YES;
+    [[ServerManager sharedManager] authorizeUser:^(ServerResponse *user) {
+        NSLog(@"BoOoOm!");
+    }];
+   
 }
 
 - (void)didReceiveMemoryWarning {
@@ -35,11 +45,28 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void) viewDidAppear:(BOOL)animated {
+    
+    [super viewDidAppear:animated];
+    
+    if (self.firstTimeAppear) {
+        self.firstTimeAppear = NO;
+        
+        [[ServerManager sharedManager] authorizeUser:^(ServerResponse *user) {
+            
+            NSLog(@"AUTHORIZED!");
+           // NSLog(@"%@ %@", user.firstName, user.lastName);
+        }];
+        
+    }
+    
+}
+
 #pragma mark - API
 
 -(void) getAlbumFromServer {
     [[ServerManager sharedManager]
-     getListForUser_id:@"126076261@N03"
+     getListForUser_id:@"130931950@N04"
      per_page:3
      page:1
      format:@"json"
@@ -55,10 +82,10 @@
 
 -(void) getPhotoFromServer {
     [[ServerManager sharedManager]
-     getPhotoForPhotoset_id:@"72157650265404535"
+     getPhotoForPhotoset_id:@"72157648398655174"
      format:@"json"
      nojsoncallback:1
-     onSuccess:^(NSArray *photos) {
+     onSuccess:^(NSArray* photos) {
          
          [self.photosArray addObjectsFromArray:photos];
          [self.tableView reloadData];
@@ -68,7 +95,30 @@
      }];
 }
 
+NSString * md5( NSString *str ) {
+    const char *cStr = [str UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5( cStr, strlen(cStr), result );
+    
+    return [[NSString stringWithFormat: @"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X", result[0], result[1],   result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10], result[11], result[12], result[13], result[14], result[15]] lowercaseString];
+}
 
+-(void) getTokenFromServer:(NSString*)Frob11 {
+    NSString* hash = [@"d2cac5f203e27181api_keyffd2e06854c5dea003eb9270d5b86b13formatjsonfrob" stringByAppendingString: Frob11];
+    hash = [hash stringByAppendingString: @"methodflickr.auth.getTokennojsoncallback1permsdelete"];
+    NSString *api_sig = md5(hash);
+    
+    
+    [[ServerManager sharedManager]
+     getTokenForFrob:Frob11
+     format:@"json"
+     nojsoncallback:1
+     api_sig:api_sig
+     onSuccess:nil
+     onFailure:^(NSError *error, NSInteger statusCode) {
+         NSLog(@"error = %@, code = %d", [error localizedDescription], statusCode);
+     }];
+}
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
