@@ -11,7 +11,6 @@
 #import "ServerResponse.h"
 #import "UIImageView+AFNetworking.h"
 #import "Frob.h"
-#import "MD5Generate.h"
 #import <CommonCrypto/CommonDigest.h>
 
 @interface ViewController ()
@@ -30,7 +29,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     self.photosArray = [NSMutableArray array];
-   // [self getAlbumFromServer];
+    [self getAlbumFromServer];
     
     [self getPhotoFromServer];
     self.firstTimeAppear = YES;
@@ -38,6 +37,36 @@
         NSLog(@"BoOoOm!");
     }];
    
+    
+    UIBarButtonItem* plus =
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                  target:self
+                                                  action:@selector(choosePhoto:)];
+    
+    self.navigationItem.rightBarButtonItem = plus;
+
+}
+
+-(IBAction) choosePhoto:(id) sender {
+    UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+    picker.delegate = self;
+    
+// if((UIButton *) sender == choosePhotoBtn) { //Если будет выбор откуда грузить
+        picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+// } else {
+//     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+//  }
+    
+    [self presentModalViewController:picker animated:YES];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+   [picker dismissModalViewControllerAnimated:YES];
+    ServerManager* sm = [[ServerManager alloc] init];
+    
+    UIImage* img = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
+    [sm uploadImage:img];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -62,6 +91,14 @@
     
 }
 
+NSString * md5( NSString *str ) {
+    const char *cStr = [str UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5( cStr, strlen(cStr), result );
+    
+    return [[NSString stringWithFormat: @"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X", result[0], result[1],   result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10], result[11], result[12], result[13], result[14], result[15]] lowercaseString];
+}
+
 #pragma mark - API
 
 -(void) getAlbumFromServer {
@@ -76,7 +113,7 @@
          [self.albumArray addObjectsFromArray:albums];
      }
      onFailure:^(NSError *error, NSInteger statusCode) {
-        NSLog(@"error = %@, code = %d", [error localizedDescription], statusCode);
+        NSLog(@"error = %@, code = %d", [error localizedDescription], (long)statusCode);
      }];
 }
 
@@ -91,16 +128,8 @@
          [self.tableView reloadData];
      }
      onFailure:^(NSError *error, NSInteger statusCode) {
-         NSLog(@"error = %@, code = %d", [error localizedDescription], statusCode);
+         NSLog(@"error = %@, code = %d", [error localizedDescription], (long)statusCode);
      }];
-}
-
-NSString * md5( NSString *str ) {
-    const char *cStr = [str UTF8String];
-    unsigned char result[CC_MD5_DIGEST_LENGTH];
-    CC_MD5( cStr, strlen(cStr), result );
-    
-    return [[NSString stringWithFormat: @"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X", result[0], result[1],   result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10], result[11], result[12], result[13], result[14], result[15]] lowercaseString];
 }
 
 -(void) getTokenFromServer:(NSString*)Frob11 {
@@ -116,9 +145,10 @@ NSString * md5( NSString *str ) {
      api_sig:api_sig
      onSuccess:nil
      onFailure:^(NSError *error, NSInteger statusCode) {
-         NSLog(@"error = %@, code = %d", [error localizedDescription], statusCode);
+         NSLog(@"error = %@, code = %ld", [error localizedDescription], (long)statusCode);
      }];
 }
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

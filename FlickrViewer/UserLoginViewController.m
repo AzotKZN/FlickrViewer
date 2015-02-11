@@ -8,7 +8,6 @@
 
 #import "UserLoginViewController.h"
 #import "Frob.h"
-#import "MD5Generate.h"
 #import "CommonCrypto/CommonDigest.h"
 #import "ViewController.h"
 @interface UserLoginViewController ()
@@ -88,7 +87,6 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
 
     if ([[[request URL] path] isEqualToString:@"/azat.flickr.app"]) {
-        NSLog(@"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         Frob* frobFlickr = [[Frob alloc] init];
         
         NSString* query = [[request URL] description];

@@ -36,5 +36,7 @@
                      onSuccess:(void(^)(NSArray* photos)) success
                      onFailure:(void(^)(NSError* error, NSInteger statusCode)) failure;
 
+-(void)uploadImage:img;
+
 
 @end
