@@ -78,7 +78,6 @@
 }
 
 - (void) viewDidAppear:(BOOL)animated {
-    
     [super viewDidAppear:animated];
     
     if (self.firstTimeAppear) {
@@ -183,7 +182,7 @@ NSString * md5( NSString *str ) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    return [self.photosArray count] + 1;
+    return [self.photosArray count];
     
 }
 
@@ -199,7 +198,7 @@ NSString * md5( NSString *str ) {
     
     if (indexPath.row == [self.photosArray count]) {
         
-//        cell.imageView.image = nil;
+        cell.imageView.image = nil;
 
         
     } else {

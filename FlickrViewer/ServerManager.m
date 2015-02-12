@@ -250,9 +250,6 @@ NSString * getmd5( NSString *str ) {
 }
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)theData
 {
-    
-    //Надо будет добавить обработку ошибок
-    
     NSString* data = ([[NSString alloc] initWithData:theData encoding:NSUTF8StringEncoding]);
     NSLog(@"send %@",[[NSString alloc] initWithData:theData encoding:NSUTF8StringEncoding]);
     
@@ -273,30 +270,27 @@ NSString * getmd5( NSString *str ) {
 }
 
 -(void) photosetsAddPhoto
-              {
-                  
-                  
-    NSString *uploadSig = getmd5([NSString stringWithFormat:@"d2cac5f203e27181api_keyffd2e06854c5dea003eb9270d5b86b13auth_token%@formatjsonmethodflickr.photosets.addPhotonojsoncallback1photoset_id72157650776215095photo_id%@",token, photoId]);
+            {
+    NSString *uploadSig = getmd5([NSString stringWithFormat:@"d2cac5f203e27181api_keyffd2e06854c5dea003eb9270d5b86b13auth_token%@formatjsonmethodflickr.photosets.addPhotonojsoncallback1photo_id%@photoset_id72157650776215095", token, photoId]);
     NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:@"ffd2e06854c5dea003eb9270d5b86b13", @"api_key",
                             @"72157650776215095", @"photoset_id",
                             photoId, @"photo_id",
+                            token, @"auth_token",
                             @"json", @"format",
                             @"1", @"nojsoncallback",
-                            token, @"auth_token",
-                            uploadSig, @"api_sig", nil];
+                             uploadSig, @"api_sig",nil];
                  
     [self.requestOperationManager
-     GET:@"rest/?method=flickr.photosets.addPhoto" parameters:params
-     success:^(AFHTTPRequestOperation *operation, id responseObject) {
-         NSLog(@"%@",responseObject);
-          NSLog(@"%@",photoId);
-         NSLog(@"%@",uploadSig);
-         NSLog(@"%@",token);
-         photoId = nil;
-         [uploadSig  isEqual: @""];
-     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-         NSLog(@"Error: %@", error);
-     }];
+     POST:@"rest/?method=flickr.photosets.addPhoto"
+     parameters:params
+     success:^(AFHTTPRequestOperation *operation, NSDictionary* responseObject) {
+         NSLog(@"JSON: %@", responseObject);
+                  NSLog(@"%@", params);
+        photoId = nil;
+        [uploadSig  isEqual: @""];    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+            }
+     ];
 }
 
 
