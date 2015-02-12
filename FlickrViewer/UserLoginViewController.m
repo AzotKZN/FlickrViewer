@@ -54,7 +54,7 @@
     @"http://www.flickr.com/services/auth/?"
     "api_key=ffd2e06854c5dea003eb9270d5b86b13&"
     "perms=delete&"
-     "api_sig=1a293fa750b61947eb4c4b53f317ea26"
+    "api_sig=1a293fa750b61947eb4c4b53f317ea26"
     ;
     NSURL* url = [NSURL URLWithString:urlString];
     
@@ -85,7 +85,7 @@
 #pragma mark - Web-view
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-
+    
     if ([[[request URL] path] isEqualToString:@"/azat.flickr.app"]) {
         Frob* frobFlickr = [[Frob alloc] init];
         
@@ -110,7 +110,7 @@
                 if ([key isEqualToString:@"frob"]) {
                     
                     frobFlickr.frob = [values lastObject];
-                 
+                    
                     NSLog(@"FROB= %@", frobFlickr.frob);
                     
                 }
@@ -141,13 +141,13 @@
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 @end

@@ -36,35 +36,35 @@
     [[ServerManager sharedManager] authorizeUser:^(ServerResponse *user) {
         NSLog(@"BoOoOm!");
     }];
-   
+    
     UIRefreshControl* refresh = [[UIRefreshControl alloc] init];
     [refresh addTarget:self action:@selector(refreshWall) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refresh;
-
+    
     UIBarButtonItem* plus =
     [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                   target:self
                                                   action:@selector(choosePhoto:)];
     
     self.navigationItem.rightBarButtonItem = plus;
-
+    
 }
 
 -(IBAction) choosePhoto:(id) sender {
     UIImagePickerController * picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
     
-// if((UIButton *) sender == choosePhotoBtn) { //Если будет выбор откуда грузить
-        picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-// } else {
-//     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-//  }
+    // if((UIButton *) sender == choosePhotoBtn) { //Если будет выбор откуда грузить
+    picker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+    // } else {
+    //     picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+    //  }
     
     [self presentModalViewController:picker animated:YES];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-   [picker dismissModalViewControllerAnimated:YES];
+    [picker dismissModalViewControllerAnimated:YES];
     ServerManager* sm = [[ServerManager alloc] init];
     
     UIImage* img = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
@@ -82,13 +82,6 @@
     
     if (self.firstTimeAppear) {
         self.firstTimeAppear = NO;
-        
-        [[ServerManager sharedManager] authorizeUser:^(ServerResponse *user) {
-            
-            NSLog(@"AUTHORIZED!");
-           // NSLog(@"%@ %@", user.firstName, user.lastName);
-        }];
-        
     }
     
 }
@@ -115,7 +108,7 @@ NSString * md5( NSString *str ) {
          [self.albumArray addObjectsFromArray:albums];
      }
      onFailure:^(NSError *error, NSInteger statusCode) {
-        NSLog(@"error = %@, code = %d", [error localizedDescription], (long)statusCode);
+         NSLog(@"error = %@, code = %d", [error localizedDescription], (long)statusCode);
      }];
 }
 
@@ -199,7 +192,7 @@ NSString * md5( NSString *str ) {
     if (indexPath.row == [self.photosArray count]) {
         
         cell.imageView.image = nil;
-
+        
         
     } else {
         
@@ -208,7 +201,7 @@ NSString * md5( NSString *str ) {
         NSURLRequest* request = [NSURLRequest requestWithURL:photo.imageURL];
         
         __weak UITableViewCell* weakCell = cell;
- 
+        
         cell.imageView.image = nil;
         
         [cell.imageView

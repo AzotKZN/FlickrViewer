@@ -78,30 +78,30 @@ NSString * getmd5( NSString *str ) {
 }
 
 -(void) getListForUser_id:(NSString*)user_id
-                    per_page:(NSInteger) per_page
-                        page:(NSInteger) page
-                      format:(NSString*)format
-                    nojsoncallback:(NSInteger) nojsoncallback
-                   onSuccess:(void(^)(NSArray* albums)) success
-                   onFailure:(void(^)(NSError* error, NSInteger statusCode)) failure {
-
+                 per_page:(NSInteger) per_page
+                     page:(NSInteger) page
+                   format:(NSString*)format
+           nojsoncallback:(NSInteger) nojsoncallback
+                onSuccess:(void(^)(NSArray* albums)) success
+                onFailure:(void(^)(NSError* error, NSInteger statusCode)) failure {
+    
     NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"ffd2e06854c5dea003eb9270d5b86b13", @"api_key",
                             user_id, @"user_id",
                             @(per_page), @"per_page",
                             @(page), @"page",
                             (format), @"format",
-                    @(nojsoncallback), @"nojsoncallback", nil];
+                            @(nojsoncallback), @"nojsoncallback", nil];
     
     [self.requestOperationManager
      GET:@"rest/?method=flickr.photosets.getList"
      parameters:params
      success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"JSON: %@", responseObject);
+         NSLog(@"JSON: %@", responseObject);
          
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Error: %@", error);
-    }];
+     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+         NSLog(@"Error: %@", error);
+     }];
 }
 
 -(void) getPhotoForPhotoset_id:(NSString*)photoset_id
@@ -132,7 +132,7 @@ NSString * getmd5( NSString *str ) {
          if (success) {
              success(objectsArray);
          }
-
+         
          
      } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
          NSLog(@"Error: %@", error);
@@ -147,14 +147,14 @@ NSString * getmd5( NSString *str ) {
 -(void) getTokenForFrob:(NSString*)Frob
                  format:(NSString*)format
          nojsoncallback:(NSInteger) nojsoncallback
-                    api_sig:(NSString*)api_sig
+                api_sig:(NSString*)api_sig
               onSuccess:(void(^)(NSArray* photos)) success
               onFailure:(void(^)(NSError* error, NSInteger statusCode)) failure{
     NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:@"ffd2e06854c5dea003eb9270d5b86b13", @"api_key",
                             (Frob), @"frob",
                             (format), @"format",
                             @(nojsoncallback), @"nojsoncallback",
-                           @"delete", @"perms",
+                            @"delete", @"perms",
                             (api_sig), @"api_sig", nil];
     [self.requestOperationManager
      GET:@"rest/?method=flickr.auth.getToken" parameters:params
@@ -166,77 +166,77 @@ NSString * getmd5( NSString *str ) {
          if (failure){
              failure(error, operation.response.statusCode);
          }
-
+         
      }];
 }
 
 -(void)uploadImage:(UIImage*)img
 {
     if(self.isUploading == NO){
-            NSString *desc = @"descriptionText";
-            NSString *tag = @"tagText";
+        NSString *desc = @"descriptionText";
+        NSString *tag = @"tagText";
         
         
-            NSString *uploadSig = getmd5([NSString stringWithFormat:@"d2cac5f203e27181api_keyffd2e06854c5dea003eb9270d5b86b13auth_token%@description%@tags%@",  token, desc, tag]);
+        NSString *uploadSig = getmd5([NSString stringWithFormat:@"d2cac5f203e27181api_keyffd2e06854c5dea003eb9270d5b86b13auth_token%@description%@tags%@",  token, desc, tag]);
         
-            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-            [request setURL:[NSURL URLWithString:@"https://up.flickr.com/services/upload/"]];
-            [request setHTTPMethod:@"POST"];
-            
-            NSString *boundary = @"---------------------------7d44e178b0434";
-            
-            [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField: @"Content-Type"];
-            
-            NSMutableData *body = [NSMutableData data];
-            [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[@"Content-Disposition: form-data; name=\"api_key\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[[NSString stringWithFormat:@"%@\r\n", @"ffd2e06854c5dea003eb9270d5b86b13"] dataUsingEncoding:NSUTF8StringEncoding]];
-            
-            
-            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[@"Content-Disposition: form-data; name=\"auth_token\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[[NSString stringWithFormat:@"%@\r\n", token] dataUsingEncoding:NSUTF8StringEncoding]];
-            
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+        [request setURL:[NSURL URLWithString:@"https://up.flickr.com/services/upload/"]];
+        [request setHTTPMethod:@"POST"];
         
-            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[@"Content-Disposition: form-data; name=\"api_sig\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[[NSString stringWithFormat:@"%@\r\n", uploadSig] dataUsingEncoding:NSUTF8StringEncoding]];
-            
-            
-            
-            //Description
-            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"description\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[[NSString stringWithFormat:@"%@",desc] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-            
-            
-            //Tag
-            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"tags\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[[NSString stringWithFormat:@"%@",tag] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-            
-            //Image
-            UIImage *image = img;
-            NSData *imageData = UIImageJPEGRepresentation(image, 0.9);
-            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"photo\"; filename=\"%@\"\r\n", @"titleText"] dataUsingEncoding:NSUTF8StringEncoding]];
-            
-            [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-            
-            [body appendData:imageData];
-            
-            
-            [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        NSString *boundary = @"---------------------------7d44e178b0434";
         
-            [request setHTTPBody:body];
+        [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField: @"Content-Type"];
         
-            [self.spinner startAnimating];
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-            self.isUploading = YES;
-            NSURLConnection *theConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-            [theConnection start];
+        NSMutableData *body = [NSMutableData data];
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"Content-Disposition: form-data; name=\"api_key\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", @"ffd2e06854c5dea003eb9270d5b86b13"] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"Content-Disposition: form-data; name=\"auth_token\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", token] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"Content-Disposition: form-data; name=\"api_sig\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", uploadSig] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        
+        
+        //Description
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"description\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@",desc] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        
+        //Tag
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"tags\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@",tag] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        //Image
+        UIImage *image = img;
+        NSData *imageData = UIImageJPEGRepresentation(image, 0.9);
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"photo\"; filename=\"%@\"\r\n", @"titleText"] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:imageData];
+        
+        
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [request setHTTPBody:body];
+        
+        [self.spinner startAnimating];
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        self.isUploading = YES;
+        NSURLConnection *theConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+        [theConnection start];
         NSLog(@"%@", theConnection); }
     else{
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Загрузка уже идет!"
@@ -270,7 +270,7 @@ NSString * getmd5( NSString *str ) {
 }
 
 -(void) photosetsAddPhoto
-            {
+{
     NSString *uploadSig = getmd5([NSString stringWithFormat:@"d2cac5f203e27181api_keyffd2e06854c5dea003eb9270d5b86b13auth_token%@formatjsonmethodflickr.photosets.addPhotonojsoncallback1photo_id%@photoset_id72157650776215095", token, photoId]);
     NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:@"ffd2e06854c5dea003eb9270d5b86b13", @"api_key",
                             @"72157650776215095", @"photoset_id",
@@ -278,18 +278,18 @@ NSString * getmd5( NSString *str ) {
                             token, @"auth_token",
                             @"json", @"format",
                             @"1", @"nojsoncallback",
-                             uploadSig, @"api_sig",nil];
-                 
+                            uploadSig, @"api_sig",nil];
+    
     [self.requestOperationManager
      POST:@"rest/?method=flickr.photosets.addPhoto"
      parameters:params
      success:^(AFHTTPRequestOperation *operation, NSDictionary* responseObject) {
          NSLog(@"JSON: %@", responseObject);
-                  NSLog(@"%@", params);
-        photoId = nil;
-        [uploadSig  isEqual: @""];    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            NSLog(@"Error: %@", error);
-            }
+         NSLog(@"%@", params);
+         photoId = nil;
+         [uploadSig  isEqual: @""];    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+             NSLog(@"Error: %@", error);
+         }
      ];
 }
 
