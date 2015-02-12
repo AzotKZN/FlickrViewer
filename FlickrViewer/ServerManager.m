@@ -11,7 +11,9 @@
 #import "UserLoginViewController.h"
 #import "AccessToken.h"
 #import "Frob.h"
+#import "ViewController.h"
 #import <CommonCrypto/CommonDigest.h>
+
 
 @interface ServerManager ()
 
@@ -24,6 +26,7 @@
 @end
 
 NSString* token = nil;
+NSString* photoId = nil;
 
 @implementation ServerManager
 
@@ -49,6 +52,14 @@ NSString* token = nil;
         self.requestOperationManager = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:url];
     }
     return self;
+}
+
+NSString * getmd5( NSString *str ) {
+    const char *cStr = [str UTF8String];
+    unsigned char result[CC_MD5_DIGEST_LENGTH];
+    CC_MD5( cStr, strlen(cStr), result );
+    
+    return [[NSString stringWithFormat: @"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X", result[0], result[1],   result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10], result[11], result[12], result[13], result[14], result[15]] lowercaseString];
 }
 
 -(void) authorizeUser:(void (^)(ServerResponse* user)) completion {
@@ -159,14 +170,6 @@ NSString* token = nil;
      }];
 }
 
-NSString * md6( NSString *str ) {
-    const char *cStr = [str UTF8String];
-    unsigned char result[CC_MD5_DIGEST_LENGTH];
-    CC_MD5( cStr, strlen(cStr), result );
-    
-    return [[NSString stringWithFormat: @"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X", result[0], result[1],   result[2], result[3], result[4], result[5], result[6], result[7], result[8], result[9], result[10], result[11], result[12], result[13], result[14], result[15]] lowercaseString];
-}
-
 -(void)uploadImage:(UIImage*)img
 {
     if(self.isUploading == NO){
@@ -174,7 +177,7 @@ NSString * md6( NSString *str ) {
             NSString *tag = @"tagText";
         
         
-            NSString *uploadSig = md6([NSString stringWithFormat:@"d2cac5f203e27181api_keyffd2e06854c5dea003eb9270d5b86b13auth_token%@description%@tags%@",  token, desc, tag]);
+            NSString *uploadSig = getmd5([NSString stringWithFormat:@"d2cac5f203e27181api_keyffd2e06854c5dea003eb9270d5b86b13auth_token%@description%@tags%@",  token, desc, tag]);
         
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
             [request setURL:[NSURL URLWithString:@"https://up.flickr.com/services/upload/"]];
@@ -194,7 +197,7 @@ NSString * md6( NSString *str ) {
             [body appendData:[@"Content-Disposition: form-data; name=\"auth_token\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
             [body appendData:[[NSString stringWithFormat:@"%@\r\n", token] dataUsingEncoding:NSUTF8StringEncoding]];
             
-            
+        
             [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
             [body appendData:[@"Content-Disposition: form-data; name=\"api_sig\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
             [body appendData:[[NSString stringWithFormat:@"%@\r\n", uploadSig] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -226,6 +229,7 @@ NSString * md6( NSString *str ) {
             
             
             [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        
             [request setHTTPBody:body];
         
             [self.spinner startAnimating];
@@ -249,8 +253,13 @@ NSString * md6( NSString *str ) {
     
     //Надо будет добавить обработку ошибок
     
-    
+    NSString* data = ([[NSString alloc] initWithData:theData encoding:NSUTF8StringEncoding]);
     NSLog(@"send %@",[[NSString alloc] initWithData:theData encoding:NSUTF8StringEncoding]);
+    
+    NSData* XMLData = [[[NSString alloc] initWithData:theData encoding:NSUTF8StringEncoding] dataUsingEncoding:NSUnicodeStringEncoding];
+    NSRange range = NSMakeRange(65, 11);
+    photoId = [data substringWithRange: range];
+    [self photosetsAddPhoto];
     [self.spinner stopAnimating];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     self.isUploading = NO;
@@ -262,6 +271,34 @@ NSString * md6( NSString *str ) {
     [alert show];
     
 }
+
+-(void) photosetsAddPhoto
+              {
+                  
+                  
+    NSString *uploadSig = getmd5([NSString stringWithFormat:@"d2cac5f203e27181api_keyffd2e06854c5dea003eb9270d5b86b13auth_token%@formatjsonmethodflickr.photosets.addPhotonojsoncallback1photoset_id72157650776215095photo_id%@",token, photoId]);
+    NSDictionary* params = [NSDictionary dictionaryWithObjectsAndKeys:@"ffd2e06854c5dea003eb9270d5b86b13", @"api_key",
+                            @"72157650776215095", @"photoset_id",
+                            photoId, @"photo_id",
+                            @"json", @"format",
+                            @"1", @"nojsoncallback",
+                            token, @"auth_token",
+                            uploadSig, @"api_sig", nil];
+                 
+    [self.requestOperationManager
+     GET:@"rest/?method=flickr.photosets.addPhoto" parameters:params
+     success:^(AFHTTPRequestOperation *operation, id responseObject) {
+         NSLog(@"%@",responseObject);
+          NSLog(@"%@",photoId);
+         NSLog(@"%@",uploadSig);
+         NSLog(@"%@",token);
+         photoId = nil;
+         [uploadSig  isEqual: @""];
+     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+         NSLog(@"Error: %@", error);
+     }];
+}
+
 
 
 @end

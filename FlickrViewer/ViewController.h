@@ -10,6 +10,7 @@
 
 @interface ViewController : UITableViewController
 -(void) getTokenFromServer:(NSString*) Frob11;
-
+-(void) getPhotoFromServer;
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 @end
 

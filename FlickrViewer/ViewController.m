@@ -37,7 +37,10 @@
         NSLog(@"BoOoOm!");
     }];
    
-    
+    UIRefreshControl* refresh = [[UIRefreshControl alloc] init];
+    [refresh addTarget:self action:@selector(refreshWall) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refresh;
+
     UIBarButtonItem* plus =
     [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                   target:self
@@ -119,7 +122,7 @@ NSString * md5( NSString *str ) {
 
 -(void) getPhotoFromServer {
     [[ServerManager sharedManager]
-     getPhotoForPhotoset_id:@"72157648398655174"
+     getPhotoForPhotoset_id:@"72157650776215095"
      format:@"json"
      nojsoncallback:1
      onSuccess:^(NSArray* photos) {
@@ -150,6 +153,33 @@ NSString * md5( NSString *str ) {
 }
 
 #pragma mark - UITableViewDataSource
+
+- (void) refreshWall {
+    
+    [[ServerManager sharedManager]
+     getPhotoForPhotoset_id:@"72157650776215095"
+     format:@"json"
+     nojsoncallback:1
+     onSuccess:^(NSArray* photos) {
+         
+         [self.photosArray removeAllObjects];
+         
+         [self.photosArray addObjectsFromArray:photos];
+         
+         [self.tableView reloadData];
+         
+         [self.refreshControl endRefreshing];
+     }
+     onFailure:^(NSError *error, NSInteger statusCode) {
+         NSLog(@"error = %@, code = %ld", [error localizedDescription], statusCode);
+         
+         [self.refreshControl endRefreshing];
+     }];
+    
+}
+
+
+
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
